@@ -2,7 +2,29 @@ import speech_recognition as sr
 import os
 import webbrowser
 import openai
+from config import apikey
 import datetime
+
+openai.api_key = apikey
+
+def ai(prompt):
+    text = f"Openai response for prompt: {prompt} \n *********************** \n\n"
+
+    response = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": "Write an email to my boss for resignation"}],
+        model="gpt-4o"
+    )
+
+    # Correct response parsing
+    response_text = response['choices'][0]['message']['content']
+    #print(response_text)
+    text += response_text
+
+    if not os.path.exists("Openai"):
+        os.mkdir("Openai")
+
+    with open(f"Openai/prompt-{random.randint(1, 123456789)}.txt", "w") as f:
+        f.write(text)
 
 def say(text):
     os.system(f"say {text}")
@@ -49,4 +71,8 @@ if __name__ == '__main__':
             os.system(f"open /System/Applications/Messages.app")
 
         # Add a feature to play a specific song
+
+        # feature to get an email written out
+        if "using artificial intelligence".lower() in query.lower():
+            ai(prompt=query)
 
