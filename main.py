@@ -4,20 +4,22 @@ import webbrowser
 import openai
 from config import apikey
 import datetime
+import json
 
 openai.api_key = apikey
+
+
 
 def ai(prompt):
     text = f"Openai response for prompt: {prompt} \n *********************** \n\n"
 
     response = openai.ChatCompletion.create(
-        messages=[{"role": "user", "content": "Write an email to my boss for resignation"}],
+        messages=[{"role": "user", "content": prompt}],
         model="gpt-4o"
     )
 
     # Correct response parsing
     response_text = response['choices'][0]['message']['content']
-    #print(response_text)
     text += response_text
 
     if not os.path.exists("Openai"):
@@ -26,8 +28,10 @@ def ai(prompt):
     with open(f"Openai/prompt-{random.randint(1, 123456789)}.txt", "w") as f:
         f.write(text)
 
+
 def say(text):
     os.system(f"say {text}")
+
 
 def takeCommand():
     r = sr.Recognizer()
@@ -52,7 +56,9 @@ if __name__ == '__main__':
         # todo: add more sites
         # opening sites
         query = takeCommand()
-        sites = [["youtube", "https://www.youtube.com"], ["wikipedia", "https://www.wikipedia.com"], ["google", "https://www.google.com"], ["instagram", "https://www.instagram.com"], ["github", "https://www.github.com"], ["spotify", "https://www.spotify.com"]]
+        sites = [["youtube", "https://www.youtube.com"], ["wikipedia", "https://www.wikipedia.com"],
+                 ["google", "https://www.google.com"], ["instagram", "https://www.instagram.com"],
+                 ["github", "https://www.github.com"], ["spotify", "https://www.spotify.com"]]
         for site in sites:
             if f"Open {site[0]}".lower() in query.lower():
                 say(f"Opening {site[0]} sir......")
@@ -75,4 +81,3 @@ if __name__ == '__main__':
         # feature to get an email written out
         if "using artificial intelligence".lower() in query.lower():
             ai(prompt=query)
-
