@@ -1,32 +1,41 @@
 import speech_recognition as sr
 import os
 import webbrowser
-import openai
+from openai import OpenAI
 from config import apikey
 import datetime
 import json
+import random
 
-openai.api_key = apikey
+client = OpenAI(
+    # defaults to os.environ.get("OPENAI_API_KEY")
+    api_key=apikey,
+)
 
-
+# openai.api_key = apikey
 
 def ai(prompt):
-    text = f"Openai response for prompt: {prompt} \n *********************** \n\n"
+    text = f"OpenAI response for prompt: {prompt} \n *********************** \n\n"
 
-    response = openai.ChatCompletion.create(
-        messages=[{"role": "user", "content": prompt}],
+    response = client.chat.completions.create(
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
         model="gpt-4o"
     )
 
     # Correct response parsing
-    response_text = response['choices'][0]['message']['content']
-    text += response_text
+    text += response.choices[0].message.content.strip()
+
+    print(text)
 
     if not os.path.exists("Openai"):
         os.mkdir("Openai")
 
-    with open(f"Openai/prompt-{random.randint(1, 123456789)}.txt", "w") as f:
+    with open(f"Openai/prompt-{random.randint(1, 123456789)}", "w") as f:
         f.write(text)
+        print("File created")
+
 
 
 def say(text):
@@ -79,5 +88,5 @@ if __name__ == '__main__':
         # Add a feature to play a specific song
 
         # feature to get an email written out
-        if "using artificial intelligence".lower() in query.lower():
+        if "Using artificial intelligence".lower() in query.lower():
             ai(prompt=query)
