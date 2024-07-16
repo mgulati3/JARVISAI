@@ -12,7 +12,25 @@ client = OpenAI(
     api_key=apikey,
 )
 
-# openai.api_key = apikey
+chatStr = ""
+
+def chat(query):
+    global chatStr
+    chatStr += f"Harry: {query}\n Jarvis: "
+    response = client.chat.completions.create(
+        messages=[
+            {"role": "user", "content": chatStr}
+        ],
+        model="gpt-4o"
+    )
+
+    # Correct response parsing
+    say(response.choices[0].message.content.strip())
+    chatStr += f"{response.choices[0].message.content.strip()}\n"
+    return response.choices[0].message.content.strip()
+
+
+
 
 def ai(prompt):
     text = f"OpenAI response for prompt: {prompt} \n *********************** \n\n"
@@ -32,7 +50,11 @@ def ai(prompt):
     if not os.path.exists("Openai"):
         os.mkdir("Openai")
 
-    with open(f"Openai/prompt-{random.randint(1, 123456789)}", "w") as f:
+    # with open(f"Openai/prompt-{random.randint(1, 123456789)}", "w") as f:
+    #     f.write(text)
+    #     print("File created")
+
+    with open(f"Openai/{''.join(prompt.split('intelligence')[1:]).strip() }.txt", "w") as f:
         f.write(text)
         print("File created")
 
@@ -78,15 +100,30 @@ if __name__ == '__main__':
             say(f"Sir the time is {strfTime}")
 
         # open facetime
-        if "open facetime".lower() in query.lower():
+        elif "open facetime".lower() in query.lower():
             os.system(f"open /System/Applications/FaceTime.app")
 
         # open messages
-        if "open messages".lower() in query.lower():
+        elif "open messages".lower() in query.lower():
             os.system(f"open /System/Applications/Messages.app")
 
         # Add a feature to play a specific song
 
+        # Add a feature to display weather
+
+        # Add a feature to display news
+
         # feature to get an email written out
-        if "Using artificial intelligence".lower() in query.lower():
+        elif "Using artificial intelligence".lower() in query.lower():
             ai(prompt=query)
+            say("Done sir, please let me know if there is anything else")
+
+        elif "Jarvis Quit".lower() in query.lower():
+            exit()
+
+        elif "Reset Chat".lower() in query.lower():
+            chatStr = ""
+
+        else:
+            print("Chatting.......")
+            chat(query)
