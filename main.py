@@ -3,9 +3,11 @@ import os
 import webbrowser
 from openai import OpenAI
 from config import apikey
+from config import newsApi
 import datetime
 import json
 import random
+import requests
 
 client = OpenAI(
     # defaults to os.environ.get("OPENAI_API_KEY")
@@ -29,8 +31,33 @@ def chat(query):
     chatStr += f"{response.choices[0].message.content.strip()}\n"
     return response.choices[0].message.content.strip()
 
+def get_news(genre, country):
+    url = f'https://newsdata.io/api/1/news?apikey={newsApi}&category={genre}&country={country}'
+    response = requests.get(url)
 
+    if response.status_code != 200:
+        return f"Error: Unable to fetch news (status code: {response.status_code})"
 
+    news_data = response.json()
+
+    if news_data['status'] != 'success':
+        return f"Error: {news_data.get('message', 'Unknown error')}"
+
+    articles = news_data.get('results', [])
+    top_news = articles[:5]
+
+    news_text = f"Top 5 news in {genre} genre for {country}:\n"
+    for idx, article in enumerate(top_news, 1):
+        news_text += f"{idx}. {article['title']}\n"
+        news_text += f"   Source: {article['source_id']}\n"
+        news_text += f"   {article['link']}\n\n"
+
+    return news_text
+
+def provide_news(genre, country):
+    news = get_news(genre, country)
+    print(news)
+    say(news)
 
 def ai(prompt):
     text = f"OpenAI response for prompt: {prompt} \n *********************** \n\n"
@@ -123,6 +150,15 @@ if __name__ == '__main__':
 
         elif "Reset Chat".lower() in query.lower():
             chatStr = ""
+
+            # Provide news based on genre and country
+        elif "news" in query.lower():
+            say("Please tell me the genre of news you are interested in.")
+            genre = takeCommand()
+            say("Please tell me the country code for the news.")
+            country = takeCommand()
+            news = get_news(genre, country)
+            say(news)
 
         else:
             print("Chatting.......")
