@@ -36,28 +36,29 @@ def get_news(genre, country):
     response = requests.get(url)
 
     if response.status_code != 200:
-        return f"Error: Unable to fetch news (status code: {response.status_code})"
+        return [f"Error: Unable to fetch news (status code: {response.status_code})"]
 
     news_data = response.json()
 
     if news_data['status'] != 'success':
-        return f"Error: {news_data.get('message', 'Unknown error')}"
+        return [f"Error: {news_data.get('message', 'Unknown error')}"]
 
     articles = news_data.get('results', [])
     top_news = articles[:5]
 
-    news_text = f"Top 5 news in {genre} genre for {country}:\n"
+    news_lines = [f"Top 5 news in {genre} genre for {country}:\n"]
     for idx, article in enumerate(top_news, 1):
-        news_text += f"{idx}. {article['title']}\n"
-        news_text += f"   Source: {article['source_id']}\n"
-        news_text += f"   {article['link']}\n\n"
+        news_lines.append(f"{idx}. {article['title']}")
+        news_lines.append(f"   Source: {article['source_id']}")
+         #news_lines.append(f"   {article['link']}\n")
 
-    return news_text
+    return news_lines
 
 def provide_news(genre, country):
-    news = get_news(genre, country)
-    print(news)
-    say(news)
+    news_lines = get_news(genre, country)
+    for line in news_lines:
+        print(line)
+        say(line)
 
 def ai(prompt):
     text = f"OpenAI response for prompt: {prompt} \n *********************** \n\n"
@@ -151,14 +152,13 @@ if __name__ == '__main__':
         elif "Reset Chat".lower() in query.lower():
             chatStr = ""
 
-            # Provide news based on genre and country
+        # Provide news based on genre and country
         elif "news" in query.lower():
             say("Please tell me the genre of news you are interested in.")
             genre = takeCommand()
-            say("Please tell me the country code for the news.")
+            say("Please tell me the country name for the news.")
             country = takeCommand()
-            news = get_news(genre, country)
-            say(news)
+            provide_news(genre, country)
 
         else:
             print("Chatting.......")
