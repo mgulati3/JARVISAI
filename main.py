@@ -10,7 +10,6 @@ import random
 import requests
 
 client = OpenAI(
-    # defaults to os.environ.get("OPENAI_API_KEY")
     api_key=apikey,
 )
 
@@ -26,7 +25,6 @@ def chat(query):
         model="gpt-4o"
     )
 
-    # Correct response parsing
     say(response.choices[0].message.content.strip())
     chatStr += f"{response.choices[0].message.content.strip()}\n"
     return response.choices[0].message.content.strip()
@@ -50,7 +48,6 @@ def get_news(genre, country):
     for idx, article in enumerate(top_news, 1):
         news_lines.append(f"{idx}. {article['title']}")
         news_lines.append(f"   Source: {article['source_id']}")
-         #news_lines.append(f"   {article['link']}\n")
 
     return news_lines
 
@@ -70,7 +67,6 @@ def ai(prompt):
         model="gpt-4o"
     )
 
-    # Correct response parsing
     text += response.choices[0].message.content.strip()
 
     print(text)
@@ -78,14 +74,9 @@ def ai(prompt):
     if not os.path.exists("Openai"):
         os.mkdir("Openai")
 
-    # with open(f"Openai/prompt-{random.randint(1, 123456789)}", "w") as f:
-    #     f.write(text)
-    #     print("File created")
-
     with open(f"Openai/{''.join(prompt.split('intelligence')[1:]).strip() }.txt", "w") as f:
         f.write(text)
         print("File created")
-
 
 
 def say(text):
@@ -95,7 +86,6 @@ def say(text):
 def takeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        # r.pause_threshold = 1
         audio = r.listen(source)
         try:
             print("Recognizing......")
@@ -134,12 +124,6 @@ if __name__ == '__main__':
         # open messages
         elif "open messages".lower() in query.lower():
             os.system(f"open /System/Applications/Messages.app")
-
-        # Add a feature to play a specific song
-
-        # Add a feature to display weather
-
-        # Add a feature to display news
 
         # feature to get an email written out
         elif "Using artificial intelligence".lower() in query.lower():
