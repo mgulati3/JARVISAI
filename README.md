@@ -1,7 +1,7 @@
 # JARVIS
 Jarvis AI is a voice-controlled assistant that performs various tasks based on voice commands. It can open websites, play songs, fetch news, and even interact with the OpenAI API for advanced responses. Designed to help people, including those who are visually impaired, Jarvis AI uses the say command to provide spoken feedback.
 
-Features
+# Features
 Voice Recognition: Uses the speech_recognition library to take voice commands from the user.
 Website Navigation: Opens popular websites such as YouTube, Google, and Wikipedia based on voice commands.
 Time Announcement: Announces the current time when asked.
